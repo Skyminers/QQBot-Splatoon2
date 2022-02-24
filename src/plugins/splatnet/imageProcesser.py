@@ -1,11 +1,16 @@
 import os
+import time
 from io import BytesIO
 
 from PIL import Image, ImageDraw, ImageFont
 
 cur_path = os.getcwd()
-image_folder = os.path.join(cur_path, 'ImageData')
-ttf_path = os.path.join(cur_path, 'font', 'SplatoonFontFix.otf')
+image_folder = os.path.join(cur_path, 'src', 'plugins', 'splatnet', 'ImageData')
+ttf_path = os.path.join(cur_path, 'src', 'plugins', 'splatnet', 'font', 'SplatoonFontFix.otf')
+
+# local
+# image_folder = os.path.join(cur_path, 'ImageData')
+# ttf_path = os.path.join(cur_path, 'font', 'SplatoonFontFix.otf')
 
 
 def image_to_base64(image):
@@ -15,7 +20,6 @@ def image_to_base64(image):
 
 
 def get_file(name):
-    # img = Image.open(os.path.join(cur_path, 'src', 'plugins', 'splatnet', 'ImageData', '{}.png'.format(name)))
     img = Image.open(os.path.join(image_folder, '{}.png'.format(name)))
     return img
 
@@ -47,28 +51,90 @@ def circle_corner(img, radii):
     return alpha, img
 
 
-def get_stage_card(name1, name2, contest_mode, game_mode, start_time, end_time):
-    _, image_background = circle_corner(get_file('background').resize((2048, 680)), radii=20)
-    image_left = get_file(name1).resize((980, 480), Image.ANTIALIAS)
-    image_right = get_file(name2).resize((980, 480), Image.ANTIALIAS)
-    _, image_alpha = circle_corner(image_left, radii=16)
-    image_icon = get_file(contest_mode)
+def paste_with_a(image_background, image_pasted, pos):
+    _, _, _, a = image_pasted.convert('RGBA').split()
+    image_background.paste(image_pasted, pos, mask=a)
 
-    image_background.paste(image_left, (20, 180), mask=image_alpha)
-    image_background.paste(image_right, (1040, 180), mask=image_alpha)
-    _, _, _, a = image_icon.convert('RGBA').split()
-    image_background.paste(image_icon, (20, 40), mask=a)
+
+def get_stage_card(name1, name2, contest_mode, game_mode, start_time, end_time, img_size=(1024, 340)):
+    _, image_background = circle_corner(get_file('background').resize(img_size), radii=20)
+
+    stage_size = (int(img_size[0]*0.48), int(img_size[1]*0.7))
+    image_left = get_file(name1).resize(stage_size, Image.ANTIALIAS)
+    image_right = get_file(name2).resize(stage_size, Image.ANTIALIAS)
+    _, image_alpha = circle_corner(image_left, radii=16)
+
+    width_between_stages = int((img_size[0] - 2*stage_size[0])/3)
+    start_stage_pos = (width_between_stages, int((img_size[1]-stage_size[1])/8*7))
+    image_background.paste(image_left, start_stage_pos, mask=image_alpha)
+    next_stage_pos = (start_stage_pos[0] + width_between_stages + stage_size[0], start_stage_pos[1])
+    image_background.paste(image_right, next_stage_pos, mask=image_alpha)
+
+    stage_mid_pos = (img_size[0]//2 - 60, img_size[1]//2 - 20)
+    image_icon = get_file(contest_mode)
+    paste_with_a(image_background, image_icon, stage_mid_pos)
+
+    blank_size = (img_size[0], start_stage_pos[1])
     drawer = ImageDraw.Draw(image_background)
     ttf = ImageFont.truetype(ttf_path, 40)
-    drawer.text((50, 110), contest_mode, font=ttf, fill=(255, 255, 255))
-    ttf = ImageFont.truetype(ttf_path, 80)
-    drawer.text((400, 20), game_mode, font=ttf, fill=(255, 255, 255))
-    ttf = ImageFont.truetype(ttf_path, 60)
-    drawer.text((1600, 30), '{} - {}'.format(start_time, end_time), font=ttf, fill=(255, 255, 255))
+    drawer.text((40, start_stage_pos[1]-60), contest_mode, font=ttf, fill=(255, 255, 255))
+    ttf = ImageFont.truetype(ttf_path, 50)
+    drawer.text((blank_size[0]//4, 4), game_mode, font=ttf, fill=(255, 255, 255))
+    ttf = ImageFont.truetype(ttf_path, 40)
+    drawer.text((blank_size[0]*2//3, 20), '{} - {}'.format(start_time, end_time), font=ttf, fill=(255, 255, 255))
 
     return image_background
 
 
+
+
+def time_converter(time_stamp):
+    return time.strftime('%H:%M', time.localtime(time_stamp))
+
+
+def get_stages(schedule, num_list):
+    background = Image.new('RGB', (1044, 340*3*len(num_list)), (41, 36, 33))
+    regular = schedule['regular']
+    ranked = schedule['gachi']
+    league = schedule['league']
+    pos = 0
+    for idx in num_list:
+        # Regular
+        regular_card = get_stage_card(regular[idx]['stage_a']['name'],
+                                      regular[idx]['stage_b']['name'],
+                                      'Regular',
+                                      regular[idx]['rule']['name'],
+                                      time_converter(regular[idx]['start_time']),
+                                      time_converter(regular[idx]['end_time']))
+        paste_with_a(background, regular_card, (10, pos))
+        pos += 340
+
+        # Ranked
+        ranked_card = get_stage_card(ranked[idx]['stage_a']['name'],
+                                     ranked[idx]['stage_b']['name'],
+                                     'Ranked',
+                                     ranked[idx]['rule']['name'],
+                                     time_converter(ranked[idx]['start_time']),
+                                     time_converter(ranked[idx]['end_time']),)
+        paste_with_a(background, ranked_card, (10, pos))
+        pos += 340
+
+        # League
+        league_card = get_stage_card(league[idx]['stage_a']['name'],
+                                     league[idx]['stage_b']['name'],
+                                     'League',
+                                     league[idx]['rule']['name'],
+                                     time_converter(league[idx]['start_time']),
+                                     time_converter(league[idx]['end_time']))
+        paste_with_a(background, league_card, (10, pos))
+        pos += 340
+    return image_to_base64(background)
+
+
 if __name__ == '__main__':
-    img = get_stage_card('Ancho-V Games', 'Arowana Mall', 'Regular', 'Turf War', '08:00', '10:00')
+    img = get_stage_card('Ancho-V Games', 'Arowana Mall', 'Regular', 'Turf War', '08:00', '10:00', (1024, 340))
+    # img = get_file('background').resize((2048, 680))
+    # drawer = ImageDraw.Draw(img)
+    # ttf = ImageFont.truetype(ttf_path, 40)
+    # drawer.text((50, 110), '喷', font=ttf, fill=(255, 255, 255))
     img.show()

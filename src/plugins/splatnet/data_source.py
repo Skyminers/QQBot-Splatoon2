@@ -1,28 +1,24 @@
-import time
-import os
-from PIL import Image
-import base64
-from io import BytesIO
-
-cur_path = os.getcwd()
+import httpx
+import json
+from .imageProcesser import get_stages
 
 
-def image_to_base64(image):
-    buffered = BytesIO()
-    image.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue())
-    return img_str
+def get_schedule():
+    with httpx.Client() as client:
+        result = client.get('https://splatoon2.ink/data/schedules.json')
+        return json.load(result)
 
 
-def get_file(name):
-    img = Image.open(os.path.join(cur_path, 'src', 'plugins', 'splatnet', 'ImageData', '{}.png'.format(name)))
-    return img
+def get_stage_info(num_list=None):
+    if num_list is None:
+        num_list = [0]
+    schedule = get_schedule()
+    return get_stages(schedule, num_list)
 
 
-class StageInfoImage:
-    def __init__(self):
-        self.time = time.time()
+def random_image():
+    return 'https://1mg.obfs.dev/'
 
-    def get_stage_info(self):
-        image1 = get_file('Ancho-V Games')
-        return image_to_base64(image1)
+
+if __name__ == '__main__':
+    get_stage_info().show()
