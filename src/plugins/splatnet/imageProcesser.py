@@ -100,32 +100,38 @@ def get_stages(schedule, num_list):
     pos = 0
     for idx in num_list:
         # Regular
-        regular_card = get_stage_card(regular[idx]['stage_a']['name'],
-                                      regular[idx]['stage_b']['name'],
-                                      'Regular',
-                                      regular[idx]['rule']['name'],
-                                      time_converter(regular[idx]['start_time']),
-                                      time_converter(regular[idx]['end_time']))
+        regular_card = get_stage_card(
+            regular[idx]['stage_a']['name'],
+            regular[idx]['stage_b']['name'],
+            'Regular',
+            regular[idx]['rule']['name'],
+            time_converter(regular[idx]['start_time']),
+            time_converter(regular[idx]['end_time']),
+        )
         paste_with_a(background, regular_card, (10, pos))
         pos += 340
 
         # Ranked
-        ranked_card = get_stage_card(ranked[idx]['stage_a']['name'],
-                                     ranked[idx]['stage_b']['name'],
-                                     'Ranked',
-                                     ranked[idx]['rule']['name'],
-                                     time_converter(ranked[idx]['start_time']),
-                                     time_converter(ranked[idx]['end_time']),)
+        ranked_card = get_stage_card(
+            ranked[idx]['stage_a']['name'],
+            ranked[idx]['stage_b']['name'],
+            'Ranked',
+            ranked[idx]['rule']['name'],
+            time_converter(ranked[idx]['start_time']),
+            time_converter(ranked[idx]['end_time']),
+        )
         paste_with_a(background, ranked_card, (10, pos))
         pos += 340
 
         # League
-        league_card = get_stage_card(league[idx]['stage_a']['name'],
-                                     league[idx]['stage_b']['name'],
-                                     'League',
-                                     league[idx]['rule']['name'],
-                                     time_converter(league[idx]['start_time']),
-                                     time_converter(league[idx]['end_time']))
+        league_card = get_stage_card(
+            league[idx]['stage_a']['name'],
+            league[idx]['stage_b']['name'],
+            'League',
+            league[idx]['rule']['name'],
+            time_converter(league[idx]['start_time']),
+            time_converter(league[idx]['end_time']),
+        )
         paste_with_a(background, league_card, (10, pos))
         pos += 340
     return image_to_base64(background)
