@@ -1,8 +1,7 @@
 import os
-import time
 from io import BytesIO
-
 from PIL import Image, ImageDraw, ImageFont
+from .utils import *
 
 cur_path = os.getcwd()
 image_folder = os.path.join(cur_path, 'src', 'plugins', 'splatnet', 'ImageData')
@@ -84,12 +83,6 @@ def get_stage_card(name1, name2, contest_mode, game_mode, start_time, end_time, 
     drawer.text((blank_size[0]*2//3, 20), '{} - {}'.format(start_time, end_time), font=ttf, fill=(255, 255, 255))
 
     return image_background
-
-
-
-
-def time_converter(time_stamp):
-    return time.strftime('%H:%M', time.localtime(time_stamp))
 
 
 def get_stages(schedule, num_list):

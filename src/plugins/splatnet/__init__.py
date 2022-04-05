@@ -9,11 +9,22 @@ from .config import Config
 from nonebot_guild_patch import GuildMessageEvent
 from .data_source import get_stage_info
 from .data_source import random_image
+from .data_source import get_coop_info
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
 
 # 群
+
+matcher_coop = on_command('工')
+
+
+@matcher_coop.handle()
+async def _(bot: Bot, event: Event):
+    res = get_coop_info()
+    await matcher_coop.send(
+        res
+    )
 
 matcher_stage_group = on_command('图')
 
@@ -34,7 +45,7 @@ matcher_stage_group2 = on_command('图图')
 
 @matcher_stage_group2.handle()
 async def _(bot: Bot, event: Event):
-    img = get_stage_info([0,1])
+    img = get_stage_info([0, 1])
     await matcher_stage_group2.send(
         MessageSegment.image(
             file=img,
@@ -95,36 +106,6 @@ async def _(bot: Bot, event: Event):
     args = str(event.get_message()).strip()
     img = get_stage_info([3])
     await matcher_stage_next3.send(
-        MessageSegment.image(
-            file=img,
-            cache=False,
-        )
-    )
-
-
-matcher_stage_next4 = on_command('下下下图')
-
-
-@matcher_stage_next4.handle()
-async def _(bot: Bot, event: Event):
-    args = str(event.get_message()).strip()
-    img = get_stage_info([4])
-    await matcher_stage_next4.send(
-        MessageSegment.image(
-            file=img,
-            cache=False,
-        )
-    )
-
-
-matcher_stage_next5 = on_command('下下下下图')
-
-
-@matcher_stage_next5.handle()
-async def _(bot: Bot, event: Event):
-    args = str(event.get_message()).strip()
-    img = get_stage_info([5])
-    await matcher_stage_next5.send(
         MessageSegment.image(
             file=img,
             cache=False,
