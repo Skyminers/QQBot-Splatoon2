@@ -21,7 +21,7 @@ def get_coop_info():
 
     def get_info(res):
         return {
-            'stage': res['stage']['name'],
+            'stage': trans_to_chinese(res['stage']['name']),
             'start_time': res['start_time'],
             'end_time': res['end_time'],
             'weapons': [trans_to_chinese(w['weapon']['name']) for w in res['weapons']]
@@ -36,7 +36,7 @@ def get_coop_info():
     else:
         is_cooping = '下一次工的时间'
 
-    result_string = '{}为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}\n再下次工的时间为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}'.format(
+    result_string = '{}为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}\n接下来工的时间为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}'.format(
         is_cooping, time_converter_day(first_info['start_time']), time_converter_day(first_info['end_time']),
         first_info['stage'],
         first_info['weapons'][0], first_info['weapons'][1], first_info['weapons'][2], first_info['weapons'][3],
