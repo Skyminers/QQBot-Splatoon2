@@ -1,20 +1,31 @@
 # import nonebot
 from nonebot import get_driver
 from nonebot import on_command
-from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot.adapters import Event
 from nonebot.adapters.cqhttp import Bot, MessageSegment, exception
 from .config import Config
 from nonebot_guild_patch import GuildMessageEvent
-from .data_source import get_stage_info
-from .data_source import random_image
-from .data_source import get_coop_info
+from .data_source import get_stage_info, random_image, get_coop_info
+from .utils import *
+from .imageProcesser import *
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
 
 # 群
+
+matcher_kill = on_command('伪确')
+
+
+@matcher_kill.handle()
+async def _(bot: Bot, event: Event):
+    await matcher_coop.send(
+        MessageSegment.image(
+            file=image_to_base64(get_file('Suspected Kill', format_name='jpg')),
+            cache=False,
+        )
+    )
 
 matcher_coop = on_command('工')
 
@@ -119,15 +130,13 @@ matcher_random = on_command('色图')
 
 @matcher_random.handle()
 async def _(bot: Bot, event: Event):
+    group_id = event.get_session_id().split('_')[1]
+    if check_group_id(group_id):
+        send_msg = MessageSegment.image(file=random_image(), cache=False)
+    else:
+        send_msg = '几点啦，还不睡觉，等着猝死吧你们！'
     try:
-        await matcher_random.send(
-            MessageSegment.image(
-                file=random_image(),
-                cache=False,
-            ))
-        # await matcher_random.send(
-        #     '这个功能没有了！'
-        # )
+        await matcher_random.send(send_msg)
     except exception.NetworkError:
         await matcher_random.send(
             '超时了>_<, 没能拿到图片'

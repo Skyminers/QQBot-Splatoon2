@@ -59,7 +59,7 @@ trans_map = {
     'Marooner\'s Bay': '废船',
     'Salmonid Smokeyard': '工坊',
     'Ruins of Ark Polaris': '方舟',
-    'Lost Outpost': '厕所'
+    'Lost Outpost': '厕所（集落）'
 }
 
 
@@ -76,3 +76,9 @@ def trans_to_chinese(input_english):
         return trans_map[input_english]
     else:
         return input_english
+
+
+def check_group_id(group_id):
+    if group_id == '616533832':
+        return False
+    return True

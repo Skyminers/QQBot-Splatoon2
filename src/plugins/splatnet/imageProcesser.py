@@ -18,9 +18,13 @@ def image_to_base64(image):
     return buffered.getvalue()
 
 
-def get_file(name):
-    img = Image.open(os.path.join(image_folder, '{}.png'.format(name)))
+def get_file(name, format_name='png'):
+    img = Image.open(os.path.join(image_folder, '{}.{}'.format(name, format_name)))
     return img
+
+
+def get_file_path(name, format_name='png'):
+    return os.path.join(image_folder, '{}.{}'.format(name, format_name))
 
 
 def circle_corner(img, radii):
