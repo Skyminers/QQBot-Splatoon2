@@ -16,16 +16,24 @@ def get_coop_schedule():
         return json.load(result)
 
 
+def get_weapon_name(res):
+    if 'weapon' not in res:
+        return res['coop_special_weapon']['name']
+    else:
+        return res['weapon']['name']
+
+
+def get_info(res):
+    return {
+        'stage': res['stage']['name'],
+        'start_time': res['start_time'],
+        'end_time': res['end_time'],
+        'weapons': [get_weapon_name(w) for w in res['weapons']]
+    }
+
+
 def get_coop_info():
     schedule = get_coop_schedule()
-
-    def get_info(res):
-        return {
-            'stage': trans_to_chinese(res['stage']['name']),
-            'start_time': res['start_time'],
-            'end_time': res['end_time'],
-            'weapons': [trans_to_chinese(w['weapon']['name']) for w in res['weapons']]
-        }
 
     first_info = get_info(schedule['details'][0])
     second_info = get_info(schedule['details'][1])
@@ -38,12 +46,18 @@ def get_coop_info():
 
     result_string = '{}为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}\n接下来工的时间为：\n{} - {}\n地图为：{}\n武器为：{}, {}, {}, {}'.format(
         is_cooping, time_converter_day(first_info['start_time']), time_converter_day(first_info['end_time']),
-        first_info['stage'],
-        first_info['weapons'][0], first_info['weapons'][1], first_info['weapons'][2], first_info['weapons'][3],
+        trans_to_chinese(first_info['stage']),
+        trans_to_chinese(first_info['weapons'][0]),
+        trans_to_chinese(first_info['weapons'][1]),
+        trans_to_chinese(first_info['weapons'][2]),
+        trans_to_chinese(first_info['weapons'][3]),
         time_converter_day(second_info['start_time']), time_converter_day(second_info['end_time']),
-        second_info['stage'],
-        second_info['weapons'][0], second_info['weapons'][1], second_info['weapons'][2], second_info['weapons'][3],
-        )
+        trans_to_chinese(second_info['stage']),
+        trans_to_chinese(second_info['weapons'][0]),
+        trans_to_chinese(second_info['weapons'][1]),
+        trans_to_chinese(second_info['weapons'][2]),
+        trans_to_chinese(second_info['weapons'][3]),
+    )
     return result_string
 
 

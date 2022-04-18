@@ -59,7 +59,8 @@ trans_map = {
     'Marooner\'s Bay': '废船',
     'Salmonid Smokeyard': '工坊',
     'Ruins of Ark Polaris': '方舟',
-    'Lost Outpost': '厕所（集落）'
+    'Lost Outpost': '厕所（集落）',
+    'Random': '随机'
 }
 
 
