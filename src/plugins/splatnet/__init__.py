@@ -28,8 +28,7 @@ matcher_random = on_command('色图')
 
 @matcher_select_stage.handle()
 async def _(bot: Bot, event: Event):
-    msg = [int(x) for x in event.get_message().extract_plain_text()[:-1]]
-    msg.sort()
+    msg = list(set([int(x) for x in event.get_message().extract_plain_text()[:-1]]))
     img = get_stage_info(msg)
     await matcher_coop.send(
         MessageSegment.image(
