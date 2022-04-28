@@ -1,4 +1,6 @@
 import time
+from .json_struct import JsonStruct
+from multiprocessing import Lock
 
 trans_map = {
     'Sploosh-o-matic': '喇叭',
@@ -63,6 +65,8 @@ trans_map = {
     'Random': '随机'
 }
 
+image_json_lock = Lock()
+
 
 def time_converter(time_stamp):
     return time.strftime('%H:%M', time.localtime(time_stamp))
@@ -83,3 +87,17 @@ def check_group_id(group_id):
     if group_id == '616533832':
         return False
     return True
+
+
+def check_personal_id(personal_id):
+    image_json_lock.acquire()  # Multiprocess image access should be considered
+    jsonStruct = JsonStruct('ImagePersonalIdList')
+    id_list = jsonStruct.readFile()
+    if personal_id in id_list:
+        res = False
+    else:
+        id_list[personal_id] = 1
+        res = True
+    jsonStruct.save(id_list)
+    image_json_lock.release()
+    return res
