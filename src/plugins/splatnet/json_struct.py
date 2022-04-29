@@ -6,9 +6,7 @@ class JsonStruct:
     def __init__(self, filename):
         self.path = os.path.join('.', 'staticData', filename + '.json')
         if not os.path.exists(self.path):
-            tmp = open(self.path, 'w')
-            tmp.write('{}')
-            tmp.close()
+            self.clear()
 
     def readFile(self):
         f = open(self.path, 'r')
@@ -22,3 +20,9 @@ class JsonStruct:
         content = json.dumps(content)
         f.write(content)
         f.close()
+
+    def clear(self):
+        f = open(self.path, 'w')
+        f.write('{}')
+        f.close()
+

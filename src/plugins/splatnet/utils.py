@@ -65,6 +65,8 @@ trans_map = {
     'Random': '随机'
 }
 
+white_list = ['458482582', '792711635']
+
 image_json_lock = Lock()
 
 
@@ -84,12 +86,14 @@ def trans_to_chinese(input_english):
 
 
 def check_group_id(group_id):
-    if group_id == '616533832':
-        return False
+    # if group_id == '616533832':
+    #     return False
     return True
 
 
 def check_personal_id(personal_id):
+    if personal_id in white_list:
+        return True
     image_json_lock.acquire()  # Multiprocess image access should be considered
     jsonStruct = JsonStruct('ImagePersonalIdList')
     id_list = jsonStruct.readFile()

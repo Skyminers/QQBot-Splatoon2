@@ -4,6 +4,7 @@ from nonebot import on_command, on_regex
 from nonebot.typing import T_State
 from nonebot.adapters import Event
 from nonebot.adapters.cqhttp import Bot, MessageSegment, exception
+from nonebot import require
 from .config import Config
 from .data_source import *
 from .utils import *
@@ -12,8 +13,21 @@ from .json_struct import JsonStruct
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
+scheduler = require("nonebot_plugin_apscheduler").scheduler
 
-# 群
+
+# Scheduler
+
+def clear_every_day_from_program_start():
+    image_json_lock.acquire()  # Multiprocess image access should be considered
+    jsonStruct = JsonStruct('ImagePersonalIdList')
+    jsonStruct.clear()
+    image_json_lock.release()
+
+
+scheduler.add_job(clear_every_day_from_program_start, "interval", days=1, id="clear_json_file")
+
+# Response
 
 matcher_select_stage = on_regex('[0-9]+图')
 matcher_weapon_power = on_command('主强')
@@ -176,4 +190,3 @@ async def _(bot: Bot, event: Event):
         await matcher_random.send(
             '超时了>_<, 没能拿到图片'
         )
-
