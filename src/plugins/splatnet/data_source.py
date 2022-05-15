@@ -69,8 +69,10 @@ def get_stage_info(num_list=None):
 
 
 def random_image():
-    return 'https://1mg.obfs.dev/'
-
+    # return 'https://1mg.obfs.dev/'
+    return 'https://pximg2.rainchan.win/rawimg'
+    # return 'https://rc-pximg.glitch.me/rawimg'
+    # return 'https://rc-pximg.glitch.me/img'
 
 if __name__ == '__main__':
     # get_stage_info().show()

@@ -105,3 +105,15 @@ def check_personal_id(personal_id):
     jsonStruct.save(id_list)
     image_json_lock.release()
     return res
+
+
+def record_times(personal_id, x):
+    image_json_lock.acquire()  # Multiprocess image access should be considered
+    jsonStruct = JsonStruct('ImagePersonalIdList')
+    id_list = jsonStruct.readFile()
+    if personal_id in id_list:
+        id_list[personal_id] += x
+    else:
+        id_list[personal_id] = x
+    jsonStruct.save(id_list)
+    image_json_lock.release()

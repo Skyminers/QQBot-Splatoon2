@@ -26,6 +26,7 @@ def clear_every_day_from_program_start():
 
 
 scheduler.add_job(clear_every_day_from_program_start, "interval", days=1, id="clear_json_file")
+# TODO: 定时删除的功能未经测试，且此处应该改为每日固定时间而不是时间间隔
 
 # Response
 
@@ -180,13 +181,16 @@ async def _(bot: Bot, event: Event):
     try:
         if check_group_id(group_id):
             if check_personal_id(personal_id):
-                send_msg = MessageSegment.image(file=random_image(), cache=False, timeout=10)
+                send_msg = MessageSegment.image(file=random_image(), cache=False)
             else:
                 send_msg = '今天已经色过了，明天再来吧！'
         else:
             send_msg = '几点啦，还不睡觉，等着猝死吧你们！'
+        if send_msg is None:
+            send_msg = '获取失败了，重来一遍吧！'
+        else:
+            record_times(personal_id, 1)
         await matcher_random.send(send_msg)
     except exception.NetworkError:
-        await matcher_random.send(
-            '超时了>_<, 没能拿到图片'
-        )
+        print('timeout')
+        # await matcher_random.send('我一定会修好这个鬼东西的！')
