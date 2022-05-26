@@ -3,11 +3,28 @@ import json
 from .utils import *
 from .imageProcesser import get_stages
 
+schedule_res = None
+
+
+def check_expire_schedule(schedule):
+    st = schedule['regular'][0]['start_time']
+    ed = schedule['regular'][0]['end_time']
+    nw = time.time()
+    if st < nw < ed:
+        return False
+    return True
+
 
 def get_schedule():
-    with httpx.Client() as client:
-        result = client.get('https://splatoon2.ink/data/schedules.json')
-        return json.load(result)
+    global schedule_res
+    if schedule_res is None or check_expire_schedule(schedule_res):
+        print('Re-get schedule')
+        with httpx.Client() as client:
+            result = client.get('https://splatoon2.ink/data/schedules.json')
+            schedule_res = json.load(result)
+            return schedule_res
+    else:
+        return schedule_res
 
 
 def get_coop_schedule():
@@ -61,10 +78,17 @@ def get_coop_info():
     return result_string
 
 
-def get_stage_info(num_list=None):
+def get_stage_info(num_list=None, stage_mode=None):
     if num_list is None:
         num_list = [0]
     schedule = get_schedule()
+    if stage_mode is not None:
+        if len(stage_mode) == 2:
+            return get_stages(schedule, num_list, map_contest[stage_mode[:2]])
+        elif len(stage_mode) == 4:
+            return get_stages(schedule, num_list, map_contest[stage_mode[2:]], map_rule[stage_mode[:2]])
+        else:
+            raise NameError()
     return get_stages(schedule, num_list)
 
 
@@ -73,6 +97,7 @@ def random_image():
     return 'https://pximg2.rainchan.win/rawimg'
     # return 'https://rc-pximg.glitch.me/rawimg'
     # return 'https://rc-pximg.glitch.me/img'
+
 
 if __name__ == '__main__':
     # get_stage_info().show()

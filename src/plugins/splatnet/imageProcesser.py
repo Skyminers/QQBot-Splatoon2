@@ -89,48 +89,65 @@ def get_stage_card(name1, name2, contest_mode, game_mode, start_time, end_time, 
     return image_background
 
 
-def get_stages(schedule, num_list):
-    background = Image.new('RGB', (1044, 340*3*len(num_list)), (41, 36, 33))
+def get_stages(schedule, num_list, contest_match=None, rule_match=None):
     regular = schedule['regular']
     ranked = schedule['gachi']
     league = schedule['league']
+    cnt = 0
+    for idx in num_list:
+        if contest_match is None or contest_match == 'Turf War':
+            if rule_match is None or rule_match == regular[idx]['rule']['name']:
+                cnt += 1
+
+        if contest_match is None or contest_match == 'Ranked':
+            if rule_match is None or rule_match == ranked[idx]['rule']['name']:
+                cnt += 1
+
+        if contest_match is None or contest_match == 'League':
+            if rule_match is None or rule_match == league[idx]['rule']['name']:
+                cnt += 1
+
+    background = Image.new('RGB', (1044, 340*cnt), (41, 36, 33))
     pos = 0
     for idx in num_list:
-        # Regular
-        regular_card = get_stage_card(
-            regular[idx]['stage_a']['name'],
-            regular[idx]['stage_b']['name'],
-            'Regular',
-            regular[idx]['rule']['name'],
-            time_converter(regular[idx]['start_time']),
-            time_converter(regular[idx]['end_time']),
-        )
-        paste_with_a(background, regular_card, (10, pos))
-        pos += 340
+        if contest_match is None or contest_match == 'Turf War':
+            if rule_match is None or rule_match == regular[idx]['rule']['name']:
+                regular_card = get_stage_card(
+                    regular[idx]['stage_a']['name'],
+                    regular[idx]['stage_b']['name'],
+                    'Regular',
+                    regular[idx]['rule']['name'],
+                    time_converter(regular[idx]['start_time']),
+                    time_converter(regular[idx]['end_time']),
+                )
+                paste_with_a(background, regular_card, (10, pos))
+                pos += 340
 
-        # Ranked
-        ranked_card = get_stage_card(
-            ranked[idx]['stage_a']['name'],
-            ranked[idx]['stage_b']['name'],
-            'Ranked',
-            ranked[idx]['rule']['name'],
-            time_converter(ranked[idx]['start_time']),
-            time_converter(ranked[idx]['end_time']),
-        )
-        paste_with_a(background, ranked_card, (10, pos))
-        pos += 340
+        if contest_match is None or contest_match == 'Ranked':
+            if rule_match is None or rule_match == ranked[idx]['rule']['name']:
+                ranked_card = get_stage_card(
+                    ranked[idx]['stage_a']['name'],
+                    ranked[idx]['stage_b']['name'],
+                    'Ranked',
+                    ranked[idx]['rule']['name'],
+                    time_converter(ranked[idx]['start_time']),
+                    time_converter(ranked[idx]['end_time']),
+                )
+                paste_with_a(background, ranked_card, (10, pos))
+                pos += 340
 
-        # League
-        league_card = get_stage_card(
-            league[idx]['stage_a']['name'],
-            league[idx]['stage_b']['name'],
-            'League',
-            league[idx]['rule']['name'],
-            time_converter(league[idx]['start_time']),
-            time_converter(league[idx]['end_time']),
-        )
-        paste_with_a(background, league_card, (10, pos))
-        pos += 340
+        if contest_match is None or contest_match == 'League':
+            if rule_match is None or rule_match == league[idx]['rule']['name']:
+                league_card = get_stage_card(
+                    league[idx]['stage_a']['name'],
+                    league[idx]['stage_b']['name'],
+                    'League',
+                    league[idx]['rule']['name'],
+                    time_converter(league[idx]['start_time']),
+                    time_converter(league[idx]['end_time']),
+                )
+                paste_with_a(background, league_card, (10, pos))
+                pos += 340
     return image_to_base64(background)
 
 

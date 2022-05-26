@@ -65,10 +65,12 @@ trans_map = {
     'Random': '随机'
 }
 
-white_list = ['458482582', '792711635']
+map_contest = {'涂地': 'Turf War', '单排': 'Ranked', '组排': 'League'}
+map_rule = {'区域': 'Splat Zones', '推塔': 'Tower Control', '蛤蜊': 'Clam Blitz', '抢鱼': 'Rainmaker'}
+
+white_list = ['458482582', '792711635', '835723997']
 
 image_json_lock = Lock()
-
 
 def time_converter(time_stamp):
     return time.strftime('%H:%M', time.localtime(time_stamp))

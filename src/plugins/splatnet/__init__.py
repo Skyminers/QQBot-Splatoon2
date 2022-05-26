@@ -1,4 +1,6 @@
 # import nonebot
+import re
+
 from nonebot import get_driver
 from nonebot import on_command, on_regex
 from nonebot.typing import T_State
@@ -25,16 +27,20 @@ def clear_every_day_from_program_start():
     image_json_lock.release()
 
 
-scheduler.add_job(clear_every_day_from_program_start, "interval", days=1, id="clear_json_file")
-# TODO: 定时删除的功能未经测试，且此处应该改为每日固定时间而不是时间间隔
+scheduler.add_job(clear_every_day_from_program_start, trigger='cron', hour='2')
+# TODO: 定时删除的功能未经测试
 
 # Response
 
 matcher_select_stage = on_regex('[0-9]+图')
+matcher_select_stage_mode_rule = on_regex('[0-9]+(区域|推塔|蛤蜊|抢鱼)(单|组)排')
+matcher_select_stage_mode = on_regex('[0-9]+(单排|组排|涂地)')
+matcher_select_all_mode_rule = on_regex('全部(区域|推塔|蛤蜊|抢鱼)(单|组)排')
+matcher_select_all_mode = on_regex('全部(单排|组排|涂地)')
 matcher_weapon_power = on_command('主强')
 matcher_skill_forward = on_command('品牌倾向')
 matcher_weapon_distance = on_command('武器射程')
-matcher_weapon_infomation = on_command('武器详情')
+matcher_weapon_information = on_command('武器详情')
 matcher_kill = on_command('伪确')
 matcher_coop = on_command('工')
 matcher_pool = on_command('开泉')
@@ -43,6 +49,58 @@ matcher_stage_group2 = on_command('图图')
 matcher_stage_next1 = on_command('下图')
 matcher_stage_next12 = on_command('下图图')
 matcher_random = on_command('色图')
+
+
+@matcher_select_all_mode.handle()
+async def _(bot: Bot, event: Event):
+    plain_text = event.get_message().extract_plain_text()
+    msg = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    img = get_stage_info(msg, stage_mode=plain_text[-2:])
+    await matcher_select_all_mode.send(
+        MessageSegment.image(
+            file=img,
+            cache=False,
+        )
+    )
+
+
+@matcher_select_all_mode_rule.handle()
+async def _(bot: Bot, event: Event):
+    plain_text = event.get_message().extract_plain_text()
+    msg = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    img = get_stage_info(msg, stage_mode=plain_text[-4:])
+    await matcher_select_all_mode_rule.send(
+        MessageSegment.image(
+            file=img,
+            cache=False,
+        )
+    )
+
+
+@matcher_select_stage_mode_rule.handle()
+async def _(bot: Bot, event: Event):
+    plain_text = event.get_message().extract_plain_text()
+    msg = list(set([int(x) for x in plain_text[:-4]]))
+    img = get_stage_info(msg, stage_mode=plain_text[-4:])
+    await matcher_select_stage_mode_rule.send(
+        MessageSegment.image(
+            file=img,
+            cache=False,
+        )
+    )
+
+
+@matcher_select_stage_mode.handle()
+async def _(bot: Bot, event: Event):
+    plain_text = event.get_message().extract_plain_text()
+    msg = list(set([int(x) for x in plain_text[:-2]]))
+    img = get_stage_info(msg, stage_mode=plain_text[-2:])
+    await matcher_select_stage_mode.send(
+        MessageSegment.image(
+            file=img,
+            cache=False,
+        )
+    )
 
 
 @matcher_weapon_distance.handle()
@@ -55,9 +113,9 @@ async def _(bot: Bot, event: Event):
     )
 
 
-@matcher_weapon_infomation.handle()
+@matcher_weapon_information.handle()
 async def _(bot: Bot, event: Event):
-    await matcher_weapon_infomation.send(
+    await matcher_weapon_information.send(
         MessageSegment.image(
             file=image_to_base64(get_file('Weapons Information', format_name='jpg')),
             cache=False,
