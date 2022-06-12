@@ -76,7 +76,7 @@ async def _(bot: Bot, event: Event, state: T_State):
     member = str(state['member']).strip()
     if member.isdigit():
         member = int(member)
-        if 1 <= member <= 9:
+        if 4 <= member <= 9:
             pass
         else:
             await matcher_spy_contest_start.send('人数应该在 4~9 范围内！')
