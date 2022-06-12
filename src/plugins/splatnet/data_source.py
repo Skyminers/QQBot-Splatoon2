@@ -94,9 +94,16 @@ def get_stage_info(num_list=None, stage_mode=None):
 
 def random_image():
     # return 'https://1mg.obfs.dev/'
-    return 'https://pximg2.rainchan.win/rawimg'
+    # return 'https://pximg2.rainchan.win/rawimg'
     # return 'https://rc-pximg.glitch.me/rawimg'
-    # return 'https://rc-pximg.glitch.me/img'
+    # return 'https://pximg.rainchan.win/rawimg'
+    # return 'https://api.pixiv.cx/rand/?mode=1/2/3'
+    # return 'http://www.dmoe.cc/random.php'
+    return 'https://imgapi.cn/api.php?zd=zd&fl=dongman'
+
+
+def random_image_background(zd='pc', fl='fengjing'):
+    return 'https://imgapi.cn/api.php?&zd={}&fl={}&gs=images'.format(zd, fl)
 
 
 if __name__ == '__main__':

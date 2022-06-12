@@ -106,7 +106,8 @@ def get_stages(schedule, num_list, contest_match=None, rule_match=None):
         if contest_match is None or contest_match == 'League':
             if rule_match is None or rule_match == league[idx]['rule']['name']:
                 cnt += 1
-
+    if cnt == 0:
+        return None
     background = Image.new('RGB', (1044, 340*cnt), (41, 36, 33))
     pos = 0
     for idx in num_list:

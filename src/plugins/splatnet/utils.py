@@ -80,6 +80,10 @@ def time_converter_day(time_stamp):
     return time.strftime('%m-%d %H:%M', time.localtime(time_stamp))
 
 
+def time_converter_display(time_stamp):
+    return time.strftime('20%y年%m月%d日 %H:%M:%S', time.localtime(time_stamp))
+
+
 def trans_to_chinese(input_english):
     if input_english in trans_map:
         return trans_map[input_english]
@@ -102,7 +106,7 @@ def check_personal_id(personal_id):
     if personal_id in id_list:
         res = False
     else:
-        id_list[personal_id] = 1
+        id_list[personal_id] = 0
         res = True
     jsonStruct.save(id_list)
     image_json_lock.release()
